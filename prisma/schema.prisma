@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Utilisateurs de l'application (Super-Admin et Admins adjoints)
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      String   @default("ADMIN") // SUPER_ADMIN ou ADMIN
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  persons   Person[]
+}
+
+// Personnes de l'Église
+model Person {
+  id                      String   @id @default(cuid())
+  numero                  Int      @default(0)
+  nomPrenoms              String
+  telephone               String?
+  quartier                String?
+  profession              String?
+  communauteFrequentee    String?
+  trancheAge              String?  // 10-15, 16-25, 26-35, 36-45, +46
+  situationMatrimoniale   String?  // Célibataire, Fiancé.e, Marié.e, Concubinage, Veuf.ve, Divorcé.e
+  dateArrivee             String?  // Format: DD/MM/YYYY
+  jourAnniversaire        Int?     // 1-31
+  moisAnniversaire        Int?     // 1-12
+  accepteJesus            Boolean  @default(false)
+  veutBapteme             Boolean  @default(false)
+  besoinSuivi             Boolean  @default(false)
+  voirPasteur             Boolean  @default(false)
+  besoinPriere            Boolean  @default(false)
+  integrerEglise          Boolean  @default(false)
+  indecis                 Boolean  @default(false)
+  renseignementsEglise    Boolean  @default(false)
+  email                   String?
+  matricule               String?
+  personneRessource       String?
+  contacts                String?
+  photo                   String?  // URL ou base64 de la photo
+  note                    String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  createdBy               String?
+  user                    User?   @relation(fields: [createdBy], references: [id])
+}
+
+// Configuration de l'église
+model ChurchConfig {
+  id        String   @id @default(cuid())
+  name      String   @default("Mon Église")
+  logo      String?  // URL ou base64 du logo
+  updatedAt DateTime @updatedAt
+}
